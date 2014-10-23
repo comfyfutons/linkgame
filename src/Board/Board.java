@@ -36,6 +36,40 @@ public class Board {
 			System.out.println("position not on board");
 		}
 	}
+	
+	public boolean checkNumbers(){
+		for(int i = 0; i < board.length; i++){
+			for(int j = 0; j < board[0].length; j++){
+				if((i+1)%2 == 0 && (j+1)%2 == 0){
+					if(((Square) board[i][j]).getNumber() != -1){
+						int count = ((Square) board[i][j]).getNumber();
+						if( ((Line) board[i+1][j]).isLine() == true ){
+							count--;
+						}
+						if( ((Line) board[i][j+1]).isLine() == true ){
+							count--;
+						}
+						if( ((Line) board[i-1][j]).isLine() == true ){
+							count--;
+						}
+						if( ((Line) board[i][j-1]).isLine() == true ){
+							count--;
+						}
+						if(count != 0){
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean checkLoop(){
+
+				
+		return true;
+	}
 
 	public void setLine(int xPos, int yPos, String location){
 		if(xPos <= board.length/2 && yPos <= board[0].length/2 && xPos > 0 && yPos > 0){

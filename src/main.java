@@ -14,6 +14,11 @@ public class main {
 		
 		Board test = new Board(5);
 		
+		test.setNumber(1, 1, 3);
+		test.setNumber(2, 1, 3);
+		test.setNumber(5, 3, 1);
+		test.setNumber(4, 2, 2);
+		
 		test.printBoard();
 		
 		while(gameStatus == GAME_RUNNING){
@@ -33,6 +38,7 @@ public class main {
 			test.setLine(y, x, location);
 			
 			test.printBoard();
+			System.out.println(test.checkNumbers());
 		}
 		
 		System.out.println("Game Over");
