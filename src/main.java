@@ -1,4 +1,10 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import Board.Board;
 
@@ -8,16 +14,35 @@ public class main {
 
 	public static void main(String args[]){
 		
+		Board test = new Board(0);
 		int gameStatus = GAME_RUNNING;
 		
 		Scanner scan = new Scanner(System.in);
+		File selectedFile;
 		
-		Board test = new Board(5);
-		
-		test.setNumber(1, 1, 3);
-		test.setNumber(2, 1, 3);
-		test.setNumber(5, 3, 1);
-		test.setNumber(4, 2, 2);
+		JFrame parentFrame = new JFrame();
+		JFileChooser fileChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("txt files", "txt");
+		fileChooser.setFileFilter(filter);
+		int result = fileChooser.showOpenDialog(parentFrame);
+		if (result == JFileChooser.APPROVE_OPTION) {
+		    selectedFile = fileChooser.getSelectedFile();
+		    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+		   
+		    try {
+		    	Scanner scanFile = new Scanner(selectedFile);
+		    	if(scanFile.hasNext()){
+		    		test = new Board(scanFile.nextInt());
+		    	}
+		    	while(scanFile.hasNext()){
+		    		test.setNumber(scanFile.nextInt(), scanFile.nextInt(), scanFile.nextInt());
+		    	}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    
+		}
 		
 		test.printBoard();
 		
@@ -25,20 +50,25 @@ public class main {
 			int x;
 			int y;
 			String location;
-		
-			System.out.println("enter X Position to place a line (1 - " + test.getSize() / 2 + ")");
+			
+
+			System.out.println("Enter move in format 'row# column# lineside' with spaces in between. example: '1 1 top':");
 			x = scan.nextInt();
-			
-			System.out.println("enter Y Position to place a line (1 - " + test.getSize() / 2 + ")");
 			y = scan.nextInt();
-			
-			System.out.println("enter top, bottom, right, or left to place the line");
 			location = scan.next();
-			
-			test.setLine(y, x, location);
-			
+
+			if(location.equals("right") || location.equals("bottom") || location.equals("left") || location.equals("top")){
+				test.setLine(y, x, location);
+			} else{
+				System.out.println("lineside must equal right, bottom, left, or top");
+			}
+
 			test.printBoard();
-			System.out.println(test.checkNumbers());
+			if(test.checkLoop() && test.checkNumbers()){
+				System.out.println("Game Status: WINNING BOARD");
+			} else{
+				System.out.println("Game Status: Incorrect Board");
+			}
 		}
 		
 		System.out.println("Game Over");
