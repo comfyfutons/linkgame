@@ -213,13 +213,13 @@ public class Board {
 		if(xPos <= board.length/2 && yPos <= board[0].length/2 && xPos > 0 && yPos > 0){
 			int xPosition = xPos * 2 - 1;
 			int yPosition = yPos * 2 - 1;
-			if(location.equals("top")){
+			if(location.equals("T")){
 				yPosition--;
-			} else if(location.equals("right")){
+			} else if(location.equals("R")){
 				xPosition++;
-			} else if(location.equals("left")){
+			} else if(location.equals("L")){
 				xPosition--;
-			} else if(location.equals("bottom")){
+			} else if(location.equals("B")){
 				yPosition++;
 			}
 			((Line) board[yPosition][xPosition]).toggle();
