@@ -507,9 +507,7 @@ public class Board {
 							starti = i - 1;
 							startj = j - 1;
 							solution = solveRecursively(i-1, j-1);
-							System.out.println("solution found: " + solution);
 							if(!solution){
-								System.out.println("testing5");
 								starti = i + 1;
 								startj = j + 1;
 								solution = solveRecursively(i+1, j+1);
@@ -521,7 +519,7 @@ public class Board {
 			number--;
 		}
 		
-		printBoardAndUnusable();
+		printBoard();
 	}
 	
 	private boolean solveRecursively(int i, int j){
@@ -767,7 +765,7 @@ public class Board {
 
 	//printUnusable Method: prints to the console a text representation of the game board with only unusable spaces marked
 	public void printUnusable(){
-		System.out.println("GAME BOARD:");
+		System.out.println("GAME BOARD (Displaying Only Unusable Lines):");
 		for(int i = 0; i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if((i+1)%2 == 0 && (j+1)%2 == 0){
@@ -804,7 +802,7 @@ public class Board {
 
 	//printBoardAndUnusable Method: prints to the console a text representation of the game board with unusable spaces and lines marked
 	public void printBoardAndUnusable(){
-		System.out.println("GAME BOARD:");
+		System.out.println("GAME BOARD (Displaying Unusable Lines and Lines):");
 		for(int i = 0; i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if((i+1)%2 == 0 && (j+1)%2 == 0){

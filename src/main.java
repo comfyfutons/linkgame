@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import java.lang.management.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import Board.Board;
@@ -101,6 +102,9 @@ public class main {
 			
 			//COMPUTER SOLVES PUZZLE
 			if(play.equals("comp")){
+				ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
+				long startTime = bean.getCurrentThreadCpuTime();
+				
 				System.out.println("Computer Solver");
 				test.printUnusable();
 				test.adjacentRules();
@@ -109,6 +113,10 @@ public class main {
 				
 				test.solve();
 				
+				long endTime = bean.getCurrentThreadCpuTime();
+				double seconds = ((double)(endTime - startTime))/1000000000;
+				
+				System.out.println("Executin in " + seconds + " seconds.");
 				System.out.println("would you like to play again (Y or N)?");
 				String playAgain;
 				playAgain = scan.next();
