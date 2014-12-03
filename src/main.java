@@ -48,45 +48,80 @@ public class main {
 			boolean winStatus = false;
 			test.printBoard();
 
-
-			while(!winStatus){
-
-				int x;
-				int y;
-				String location;
-
-
-				System.out.println("Enter move in format 'row# column# lineside' with spaces in between. example: '1 1 T':");
-				x = scan.nextInt();
-				y = scan.nextInt();
-				location = scan.next();
-
-				//T for top, B for bottom, L for left, and R for right)
+			String play = "";
+			
+			while(!play.equals("play") && !play.equals("comp")){
+				System.out.println("Type 'play' to play the game, 'comp' to have it solved for you, or 'quit' to exit game");
+				play = scan.next();
+			}
+			
+			
+			//PLAYER SOLVES PUZZLE
+			if(play.equals("play")){
 				
-				if(location.equals("T") || location.equals("B") || location.equals("L") || location.equals("R")){
-					test.setLine(y, x, location);
-				} else{
-					System.out.println("lineside must equal T, B, L, R");
-				}
+				while(!winStatus){
 
-				test.printBoard();
-				long startTime = System.nanoTime();
-				if(test.checkLoop() && test.checkNumbers()){
-					System.out.println(System.nanoTime() - startTime);
-					System.out.println("Game Status: WINNING BOARD");
-					winStatus = true;
-					
-					System.out.println("would you like to play again (Y or N)?");
-					String playAgain;
-					playAgain = scan.next();
-					if(playAgain.equals("N") || playAgain.equals("n")){
-						gameStatus = GAME_STOPPED;
+					int x;
+					int y;
+					String location;
+
+
+					System.out.println("Enter move in format 'row# column# lineside' with spaces in between. example: '1 1 T':");
+					x = scan.nextInt();
+					y = scan.nextInt();
+					location = scan.next();
+
+					//T for top, B for bottom, L for left, and R for right)
+
+					if(location.equals("T") || location.equals("B") || location.equals("L") || location.equals("R")){
+						test.setLine(y, x, location);
+					} else{
+						System.out.println("lineside must equal T, B, L, R");
 					}
-					
-				} else{
-					System.out.println("Game Status: Incorrect Board");
+
+					test.printBoard();
+					long startTime = System.nanoTime();
+					if(test.checkLoop() && test.checkNumbers()){
+						System.out.println(System.nanoTime() - startTime);
+						System.out.println("Game Status: WINNING BOARD");
+						winStatus = true;
+
+						System.out.println("would you like to play again (Y or N)?");
+						String playAgain;
+						playAgain = scan.next();
+						if(playAgain.equals("N") || playAgain.equals("n")){
+							gameStatus = GAME_STOPPED;
+						}
+
+					} else{
+						System.out.println("Game Status: Incorrect Board");
+					}
 				}
 			}
+			
+			//COMPUTER SOLVES PUZZLE
+			if(play.equals("comp")){
+				System.out.println("Computer Solver");
+				test.printUnusable();
+				test.adjacentRules();
+				test.cornerRules();
+				test.printUnusable();
+				
+				test.solve();
+				
+				System.out.println("would you like to play again (Y or N)?");
+				String playAgain;
+				playAgain = scan.next();
+				if(playAgain.equals("N") || playAgain.equals("n")){
+					gameStatus = GAME_STOPPED;
+				}
+			}
+			
+			//QUITING GAME
+			if(play.equals("quit")){
+				gameStatus = GAME_STOPPED;
+			}
+			
 		}
 		System.out.println("Game Over");
 	}
