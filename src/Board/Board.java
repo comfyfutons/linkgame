@@ -1,10 +1,16 @@
 package Board;
 
+import java.util.Stack;
+import java.util.Vector;
+
 public class Board {
 
 	private Tile[][] board;
 	private int starti;
 	private int startj;
+	private long moves = 0;
+	Stack<Integer> solutionRow = new Stack();
+	Stack<Integer> solutionCol = new Stack();
 	
 	public Board(int size){
 		board = new Tile[size * 2 + 1][size * 2 + 1];
@@ -268,22 +274,59 @@ public class Board {
 
 						//MARK NEW UNUSABLE LINES
 						if(topLeftBlocked && leftTopBlocked){
-							((Line) board[i-1][j]).setUsable(false);
-							((Line) board[i][j-1]).setUsable(false);
+							((Line) board[i - 1][j]).setUsable(false);
+							((Line) board[i][j - 1]).setUsable(false);
 						}else if(topRightBlocked && rightTopBlocked){
-							((Line) board[i-1][j]).setUsable(false);
-							((Line) board[i][j+1]).setUsable(false);
+							((Line) board[i - 1][j]).setUsable(false);
+							((Line) board[i][j + 1]).setUsable(false);
 						}else if(rightBottomBlocked && bottomRightBlocked){
-							((Line) board[i+1][j]).setUsable(false);
-							((Line) board[i][j+1]).setUsable(false);
+							((Line) board[i + 1][j]).setUsable(false);
+							((Line) board[i][j + 1]).setUsable(false);
 						}else if(bottomLeftBlocked && leftBottomBlocked){
-							((Line) board[i+1][j]).setUsable(false);
-							((Line) board[i][j-1]).setUsable(false);
+							((Line) board[i + 1][j]).setUsable(false);
+							((Line) board[i][j - 1]).setUsable(false);
 						}
 					}
 					
-					//NEW RULE
-					if(true){
+					//0 CORNER RULE
+					if(((Square) board[i][j]).getNumber() == 0){
+						//top left
+						if(j - 2 >= 0 && (i - 2 < 0 || !((Line) board[i - 2][j - 1]).isUsable())){
+							((Line) board[i - 1][j - 2]).setUsable(false);
+						}
+						
+						if(i - 2 >= 0 && (j - 2 < 0 || !((Line) board[i - 1][j - 2]).isUsable())){
+							((Line) board[i - 2][j - 1]).setUsable(false);
+						}
+
+						//top right
+						if(j + 2 < board[0].length && (i - 2 < 0 || !((Line) board[i - 2][j + 1]).isUsable())){
+							((Line) board[i - 1][j + 2]).setUsable(false);
+						}
+						
+						if(i - 2 >= 0 && (j + 2 >= board[0].length || !((Line) board[i - 1][j + 2]).isUsable())){
+							((Line) board[i - 2][j + 1]).setUsable(false);
+						}
+							
+						
+						//bottom left
+						if(j - 2 >= 0 && (i + 2 >= board.length || !((Line) board[i + 2][j - 1]).isUsable())){
+							((Line) board[i + 1][j - 2]).setUsable(false);
+						}
+						
+						if(i + 2 < board.length && (j - 2 < 0 || !((Line) board[i + 1][j - 2]).isUsable())){
+							((Line) board[i + 2][j - 1]).setUsable(false);
+						}
+
+						//bottom right
+						if(j + 2 < board[0].length && (i + 2 >= board.length || !((Line) board[i + 2][j + 1]).isUsable())){
+							((Line) board[i + 1][j + 2]).setUsable(false);
+						}
+						
+						if(i + 2 < board.length && (j + 2 >= board[0].length || !((Line) board[i + 1][j + 2]).isUsable())){
+							((Line) board[i + 2][j + 1]).setUsable(false);
+						}
+						
 						
 					}
 					
@@ -502,7 +545,7 @@ public class Board {
 		while(number > 0 && !solution){
 			for(int i = 0; i < board.length; i++){
 				for(int j = 0; j < board[0].length; j++){
-					if((i+1)%2 == 0 && (j+1)%2 == 0){
+					if((i+1)%2 == 0 && (j+1)%2 == 0 && !solution){
 						if(((Square) board[i][j]).getNumber() == number){
 							starti = i - 1;
 							startj = j - 1;
@@ -519,7 +562,49 @@ public class Board {
 			number--;
 		}
 		
-		printBoard();
+		if(solution){
+			System.out.println("Solution Moves List (Row, Column, Side):");
+			
+			Stack<Integer> tempRows = new Stack();
+			Stack<Integer> tempCols = new Stack();
+			
+			while(!solutionRow.isEmpty() && !solutionCol.isEmpty()){
+				tempRows.push(solutionRow.pop());
+				tempCols.push(solutionCol.pop());
+			}
+			
+			while(!tempRows.isEmpty() && !tempCols.isEmpty()){
+				int rowNum = tempRows.pop();
+				int colNum = tempCols.pop();
+				String dir = "";
+				
+				if(colNum % 2 == 0 && rowNum % 2 == 1){
+					dir = "Right";
+					colNum--;
+				}
+				
+				if(colNum % 2 == 1 && rowNum % 2 == 0){
+					dir = "Top";
+				}
+				
+				if(colNum < 1){
+					dir = "Left";
+				}
+				
+				rowNum = (rowNum / 2) + 1;
+				colNum = (colNum / 2) + 1;
+
+				if(rowNum > board.length / 2){
+					dir = "Bottom";
+					rowNum--;
+				}
+				
+				System.out.println(rowNum + ", " + colNum + ", " + dir);
+			}
+			System.out.println();
+			printBoard();
+		}
+		
 	}
 	
 	private boolean solveRecursively(int i, int j){
@@ -529,7 +614,7 @@ public class Board {
 		/*
 		//SLEEPPYTIME
 		try {
-			Thread.sleep(1);
+			Thread.sleep(1500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -540,20 +625,32 @@ public class Board {
 		//move right
 		if(!done){
 			if(j + 1 < board[0].length){
-				if(((Line) board[i][j + 1]).isUsable() && !((Line) board[i][j + 1]).isLine() && !checkCollision(i, j + 2) && checkNeighbors(i, j + 1)){
+				if(((Line) board[i][j + 1]).isUsable() && !((Line) board[i][j + 1]).isLine() && !checkCollision(i, j + 2) && checkNeighbors(i, j + 1) && checkRound3(i, j, 'R')){
 					if(i == starti && j + 2 == startj){
 						((Line) board[i][j + 1]).toggle();
+						solutionRow.push(i);
+						solutionCol.push(j + 1);
+						moves++;
 						if(checkLoop() && checkNumbers()){
 							return true;
 						} else{
 							((Line) board[i][j + 1]).toggle();
+							solutionRow.pop();
+							solutionCol.pop();
 							return false;
 						}
 					}
 					((Line) board[i][j + 1]).toggle();
+					solutionRow.push(i);
+					solutionCol.push(j + 1);
+					moves++;
 					//printBoardAndUnusable();
 					done = solveRecursively(i, j + 2);
-					if(!done){ ((Line) board[i][j + 1]).toggle(); }
+					if(!done){ 
+						((Line) board[i][j + 1]).toggle();
+						solutionRow.pop();
+						solutionCol.pop();
+					}
 				}
 			}
 		}
@@ -561,20 +658,32 @@ public class Board {
 		//move up
 		if(!done){
 			if(i - 1 >= 0){
-				if(((Line) board[i - 1][j]).isUsable() && !((Line) board[i - 1][j]).isLine() && !checkCollision(i - 2, j) && checkNeighbors(i - 1, j)){
+				if(((Line) board[i - 1][j]).isUsable() && !((Line) board[i - 1][j]).isLine() && !checkCollision(i - 2, j) && checkNeighbors(i - 1, j) && checkRound3(i, j, 'U')){
 					if(i - 2 == starti && j == startj){
 						((Line) board[i - 1][j]).toggle();
+						solutionRow.push(i - 1);
+						solutionCol.push(j);
+						moves++;
 						if(checkLoop() && checkNumbers()){
 							return true;
 						} else{
 							((Line) board[i - 1][j]).toggle();
+							solutionRow.pop();
+							solutionCol.pop();
 							return false;
 						}
 					}
 					((Line) board[i - 1][j]).toggle();
+					solutionRow.push(i - 1);
+					solutionCol.push(j);
+					moves++;
 					//printBoardAndUnusable();
 					done = solveRecursively(i - 2, j);
-					if(!done){ ((Line) board[i - 1][j]).toggle(); }
+					if(!done){ 
+						((Line) board[i - 1][j]).toggle();
+						solutionRow.pop();
+						solutionCol.pop();
+					}
 				}
 			}
 		}
@@ -582,20 +691,32 @@ public class Board {
 		//move left
 		if(!done){
 			if(j - 1 >= 0){
-				if(((Line) board[i][j - 1]).isUsable() && !((Line) board[i][j - 1]).isLine() && !checkCollision(i, j - 2) && checkNeighbors(i, j - 1)){
+				if(((Line) board[i][j - 1]).isUsable() && !((Line) board[i][j - 1]).isLine() && !checkCollision(i, j - 2) && checkNeighbors(i, j - 1) && checkRound3(i, j, 'L')){
 					if(i == starti && j - 2 == startj){
 						((Line) board[i][j - 1]).toggle();
+						solutionRow.push(i);
+						solutionCol.push(j - 1);
+						moves++;
 						if(checkLoop() && checkNumbers()){
 							return true;
 						} else{
 							((Line) board[i][j - 1]).toggle();
+							solutionRow.pop();
+							solutionCol.pop();
 							return false;
 						}
 					}
 					((Line) board[i][j - 1]).toggle();
+					solutionRow.push(i);
+					solutionCol.push(j - 1);
+					moves++;
 					//printBoardAndUnusable();
 					done = solveRecursively(i, j - 2);
-					if(!done){ ((Line) board[i][j - 1]).toggle(); }
+					if(!done){ 
+						((Line) board[i][j - 1]).toggle();
+						solutionRow.pop();
+						solutionCol.pop();
+					}
 				}
 			}
 		}
@@ -603,26 +724,96 @@ public class Board {
 		//move down
 		if(!done){
 			if(i + 1 < board.length){
-				if(((Line) board[i + 1][j]).isUsable() && !((Line) board[i + 1][j]).isLine() && !checkCollision(i + 2, j) && checkNeighbors(i + 1, j)){
+				if(((Line) board[i + 1][j]).isUsable() && !((Line) board[i + 1][j]).isLine() && !checkCollision(i + 2, j) && checkNeighbors(i + 1, j) && checkRound3(i, j, 'D')){
 					if(i + 2 == starti && j == startj){
 						((Line) board[i + 1][j]).toggle();
+						solutionRow.push(i + 1);
+						solutionCol.push(j);
+						moves++;
 						if(checkLoop() && checkNumbers()){
 							return true;
 						} else{
 							((Line) board[i + 1][j]).toggle();
+							solutionRow.pop();
+							solutionCol.pop();
 							return false;
 						}
 					}
 					((Line) board[i + 1][j]).toggle();
+					solutionRow.push(i + 1);
+					solutionCol.push(j);
+					moves++;
 					//printBoardAndUnusable();
 					done = solveRecursively(i + 2, j);
-					if(!done){ ((Line) board[i + 1][j]).toggle(); }
+					if(!done){ 
+						((Line) board[i + 1][j]).toggle();
+						solutionRow.pop();
+						solutionCol.pop();
+					}
 				}
 			}
 		}
 		return done;
 	}
 
+	private boolean checkRound3(int i, int j, char dir){
+		
+		if(dir == 'R'){
+			if(j - 1 >= 0 && i + 1 < board.length && i - 1 >= 0 && ((((Square) board[i + 1][j - 1]).getNumber() == 3 && !check3Num(i + 1, j - 1)) || (((Square) board[i - 1][j - 1]).getNumber() == 3 ) && !check3Num(i - 1, j - 1))){
+				return false;
+			}
+		}
+		
+		if(dir == 'D'){
+			if(i - 1 >= 0 && j + 1 < board[0].length && j - 1 >= 0 && ((((Square) board[i - 1][j + 1]).getNumber() == 3 && !check3Num(i - 1, j + 1)) || (((Square) board[i - 1][j - 1]).getNumber() == 3 && !check3Num(i - 1, j - 1)))){
+				return false;
+			}
+		}
+		
+		if(dir == 'L'){
+			if(j + 1 < board[0].length && i + 1 < board.length && i - 1 >= 0 && ((((Square) board[i + 1][j + 1]).getNumber() == 3 && !check3Num(i + 1, j + 1)) || (((Square) board[i - 1][j + 1]).getNumber() == 3 && !check3Num(i - 1, j + 1)))){
+				return false;
+			}
+		}
+		
+		if(dir == 'U'){
+			if(i + 1 < board.length && j + 1 < board[0].length && j - 1 >= 0 && ((((Square) board[i + 1][j + 1]).getNumber() == 3 && !check3Num(i + 1, j + 1)) || (((Square) board[i + 1][j - 1]).getNumber() == 3 && !check3Num(i + 1, j - 1)))){
+				return false;
+			}
+		}
+		
+		
+		
+		return true;
+	}
+	
+	private boolean check3Num(int i, int j){
+		
+		if(((Square) board[i][j]).getNumber() != 3){
+			return true;
+		}
+		
+		int count = 0;
+		if(((Line) board[i - 1][j]).isLine()){
+			count++;
+		}
+		if(((Line) board[i + 1][j]).isLine()){
+			count++;
+		}
+		if(((Line) board[i][j + 1]).isLine()){
+			count++;
+		}
+		if(((Line) board[i][j - 1]).isLine()){
+			count++;
+		}
+		
+		if(count == 3){
+			return true;
+		} else{
+			return false;
+		}
+	}
+	
 	private boolean checkNeighbors(int i, int j){
 		
 		if(i % 2 == 0){
@@ -726,10 +917,27 @@ public class Board {
 		return false;
 	}
 
+	public long getMoves(){
+		long temp = moves;
+		moves = 0;
+		return temp;
+	}
+	
 	//printBoard Method: prints to the console a text representation of the game board
 	public void printBoard(){
 		System.out.println("GAME BOARD:");
 		for(int i = 0; i < board.length; i++){
+			//PRINT COLUMN NUMBERS
+			if(i == 0){
+				for(int k = 1; k <= board[0].length / 2; k++){
+					if(k == 1){
+						System.out.print("  ");
+					}
+					System.out.print("    " + k + "   ");
+				}
+				System.out.println("\n\n");
+			}
+			//END PRINT COLUMN NUMBERS
 			for(int j = 0; j < board[0].length; j++){
 				if((i+1)%2 == 0 && (j+1)%2 == 0){
 					if(((Square) board[i][j]).getNumber() == -1){
@@ -753,6 +961,11 @@ public class Board {
 							System.out.print("  ");
 						}
 					}
+					//PRINT ROW NUMBERS
+					if(j == board[0].length - 1){
+						System.out.print("        " + ((i / 2) + 1));
+					}
+					//END PRINT ROW NUMBERS
 				}
 			}
 			System.out.println();
@@ -843,18 +1056,3 @@ public class Board {
 
 
 }
-
-//Traverse Code
-/*
-for(int i = 0; i < board.length; i++){
-	for(int j = 0; j < board[0].length; j++){
-		if((i+1)%2 == 0 && (j+1)%2 == 0){
-			//Numbers
-		} else if((i+1)%2 == 1 && (j+1)%2 == 1){
-			//Dots
-		} else{
-			//Lines
-		}
-	}
-}
-*/

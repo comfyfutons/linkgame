@@ -51,7 +51,7 @@ public class main {
 
 			String play = "";
 			
-			while(!play.equals("play") && !play.equals("comp")){
+			while(!play.equals("play") && !play.equals("comp") && !play.equals("quit")){
 				System.out.println("Type 'play' to play the game, 'comp' to have it solved for you, or 'quit' to exit game");
 				play = scan.next();
 			}
@@ -81,9 +81,7 @@ public class main {
 					}
 
 					test.printBoard();
-					long startTime = System.nanoTime();
 					if(test.checkLoop() && test.checkNumbers()){
-						System.out.println(System.nanoTime() - startTime);
 						System.out.println("Game Status: WINNING BOARD");
 						winStatus = true;
 
@@ -114,9 +112,20 @@ public class main {
 				test.solve();
 				
 				long endTime = bean.getCurrentThreadCpuTime();
-				double seconds = ((double)(endTime - startTime))/1000000000;
 				
-				System.out.println("Executin in " + seconds + " seconds.");
+				System.out.println("Start Time (nanoSeconds): " +startTime);
+				System.out.println("End Time (nanoSeconds): " + endTime);
+				
+				long nanoSeconds = endTime - startTime;
+				
+				System.out.println("Total Time (nanoSeconds): " + nanoSeconds);
+				
+				double Seconds = ((double)(endTime - startTime))/1000000000;
+				
+				System.out.println("Moves: " + test.getMoves());
+				
+				
+				System.out.println("Executin in " + Seconds + " Seconds.");
 				System.out.println("would you like to play again (Y or N)?");
 				String playAgain;
 				playAgain = scan.next();
